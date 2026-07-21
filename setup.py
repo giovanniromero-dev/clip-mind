@@ -9,7 +9,6 @@ setup(
     name="clipmind",
     version="1.0.0",
     description="AI Clipboard Assistant - Selecciona texto, presiona Ctrl+C+M y obtén respuestas de IA",
-    long_description=long_description,
     long_description_content_type="text/markdown",
     author="ClipMind",
     url="https://github.com/tuusuario/clipmind",
