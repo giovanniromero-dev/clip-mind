@@ -1,0 +1,8 @@
+# ClipMind dependencies
+pyperclip>=1.8.2
+requests>=2.28.0
+pystray>=0.19.0
+Pillow>=9.0.0
+keyboard>=0.13.5; platform_system == "Windows"
+pynput>=1.7.6; platform_system == "Linux"
+plyer>=2.1.0

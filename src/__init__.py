@@ -1,0 +1,1 @@
+# ClipMind - AI Clipboard Assistant
