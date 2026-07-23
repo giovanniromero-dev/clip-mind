@@ -4,19 +4,27 @@ import pyperclip
 import time
 
 
+def copy_selection():
+    """Simulate Ctrl+C to copy selected text to clipboard."""
+    import platform as _platform
+    if _platform.system() == "Windows":
+        import keyboard
+        keyboard.send('ctrl+c')
+    else:
+        import subprocess
+        try:
+            subprocess.run(['xdotool', 'key', 'ctrl+c'], capture_output=True, timeout=2)
+        except (FileNotFoundError, subprocess.TimeoutExpired):
+            pass
+    time.sleep(0.15)
+
+
 def get_selected_text():
-    """Read text from clipboard (simulates getting selected text)."""
+    """Read text from clipboard."""
     try:
-        # Save current clipboard content
-        old_content = pyperclip.paste()
-        
-        # Small delay to ensure clipboard is updated
         time.sleep(0.1)
-        
-        # Try to get new content (user should have copied with Ctrl+C)
-        new_content = pyperclip.paste()
-        
-        return new_content, old_content
+        text = pyperclip.paste()
+        return text
     except Exception as e:
         raise RuntimeError(f"Error reading clipboard: {e}")
 

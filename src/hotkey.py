@@ -16,7 +16,7 @@ class HotkeyManager:
         self.on_activate = on_activate
         self.listener = None
         self.running = False
-        self._hotkey = "ctrl+c+m"
+        self._hotkey = "alt+c+m"
 
     def start(self, hotkey=None):
         """Start listening for the hotkey."""

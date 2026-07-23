@@ -14,7 +14,7 @@ import time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from src.config import load_config, save_config
-from src.clipboard import get_selected_text
+from src.clipboard import copy_selection, get_selected_text
 from src.llm_client import LLMClient, SYSTEM_PROMPTS
 from src.popup import ClipMindPopup
 from src.tray import TrayManager
@@ -37,35 +37,16 @@ class ClipMindApp:
         self.last_action = ""
         self.running = False
 
+
     def start(self):
-        """Start the application."""
+        """Start the application (tray, hotkey listener)."""
         self.running = True
-
-        # Show config wizard if no API key
-        if not self.config.get("api_key") and self.config.get("provider") != "ollama":
-            self._show_config_wizard()
-            return
-
-        # Ensure auto-start is configured
-        if self.config.get("auto_start", True):
-            try:
-                add_to_startup()
-            except Exception:
-                pass
-
-        # Start system tray
+        # Start tray icon
         self.tray.start()
-
-        # Show notification
-        show_notification("ClipMind", "🧠 Listo — Presiona Ctrl+C+M")
-
-        # Start hotkey listener (blocks in thread)
-        hotkey_thread = threading.Thread(
-            target=self.hotkey.start,
-            args=(self.config.get("hotkey", "ctrl+c+m"),),
-            daemon=True,
-        )
+        # Start hotkey listener in a daemon thread
+        hotkey_thread = threading.Thread(target=self.hotkey.start, daemon=True)
         hotkey_thread.start()
+        show_notification('ClipMind', 'ClipMind iniciado. Presiona Alt+C+M para usar.')
 
         # Keep main thread alive
         try:
@@ -74,15 +55,19 @@ class ClipMindApp:
         except KeyboardInterrupt:
             self._exit()
 
+
     def _on_hotkey(self):
         """Called when the global hotkey is pressed."""
         try:
             # Get selected text
-            text, old_content = get_selected_text()
+            copy_selection()
+
+            # Get selected text from clipboard
+            text = get_selected_text()
 
             if not text or text.strip() == "":
                 self.popup.show_error(
-                    "No hay texto seleccionado.\nSelecciona texto y presiona Ctrl+C primero."
+                    "No hay texto seleccionado.\nSelecciona texto y presiona Alt+C+M."
                 )
                 return
 
@@ -154,3 +139,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

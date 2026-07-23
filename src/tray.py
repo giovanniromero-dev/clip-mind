@@ -9,21 +9,21 @@ def create_icon():
     size = 64
     image = Image.new('RGBA', (size, size), (0, 0, 0, 0))
     draw = ImageDraw.Draw(image)
-    
+
     # Draw a simple brain/mind icon
     # Circle background
     draw.ellipse([4, 4, 60, 60], fill=(100, 100, 255, 200))
-    
+
     # Inner circle (lighter)
     draw.ellipse([12, 12, 52, 52], fill=(70, 70, 200, 180))
-    
+
     # Brain lines
     draw.arc([16, 16, 48, 48], 0, 360, fill=(180, 180, 255, 200), width=2)
     draw.arc([20, 20, 44, 44], 0, 360, fill=(180, 180, 255, 200), width=2)
-    
+
     # Center dot
     draw.ellipse([29, 29, 35, 35], fill=(220, 220, 255, 255))
-    
+
     return image
 
 
@@ -50,28 +50,23 @@ class TrayManager:
         icon_image = create_icon()
 
         menu = [
-            item("🧠 ClipMind activo", None, enabled=False),
-            item("⚙️ Configuración", self._open_config),
-            item("🔄 Probar conexión", self._test_connection),
-            item("✕ Salir", self._exit_app)
+            item("ClipMind activo", None, enabled=False),
+            item("Configuración", self._open_config),
+            item("Probar conexión", self._test_connection),
+            item("Salir", self._exit_app)
         ]
 
         self.icon = pystray.Icon(
-            "clipmind",
-            icon_image,
-            "ClipMind - Presiona Ctrl+C+M",
-            menu
+            "clipmind", icon_image, "ClipMind - Presiona Alt+C+M", menu
         )
 
         self.icon.run()
 
     def _open_config(self):
-        """Open configuration window."""
         if self.on_open_config:
             self.on_open_config()
 
     def _test_connection(self):
-        """Test the LLM connection."""
         if self.icon:
             try:
                 from src.llm_client import LLMClient
@@ -80,14 +75,13 @@ class TrayManager:
                 client = LLMClient(config)
                 success, msg = client.test_connection()
                 if success:
-                    self.icon.notify("✅ Conexión exitosa con " + config["provider"])
+                    self.icon.notify("Conexión exitosa con " + config["provider"])
                 else:
-                    self.icon.notify("❌ Error: " + msg)
+                    self.icon.notify("Error: " + msg)
             except Exception as e:
-                self.icon.notify(f"❌ Error: {e}")
+                self.icon.notify(f"Error: {e}")
 
     def _exit_app(self):
-        """Exit the application."""
         self.running = False
         if self.icon:
             self.icon.stop()
@@ -95,12 +89,10 @@ class TrayManager:
             self.on_exit()
 
     def stop(self):
-        """Stop the tray icon."""
         self.running = False
         if self.icon:
             self.icon.stop()
 
     def notify(self, message):
-        """Show a notification from the tray icon."""
         if self.icon:
             self.icon.notify(message)
