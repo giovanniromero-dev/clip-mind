@@ -1,6 +1,6 @@
 #!/bin/bash
 # ClipMind Installer for Linux
-# Usage: curl -sSL https://raw.githubusercontent.com/tuusuario/clipmind/main/install.sh | bash
+# Usage: curl -sSL https://raw.githubusercontent.com/giovanniromero-dev/clip-mind/main/install.sh | bash
 
 set -e
 
@@ -40,19 +40,44 @@ if ! command -v git &> /dev/null; then
     sudo apt install -y git || sudo dnf install -y git || sudo pacman -S --noconfirm git
 fi
 
-# Clone or download
+# Repository settings
+REPO_OWNER="giovanniromero-dev"
+REPO_NAME="clip-mind"
+ZIP_URL="https://github.com/$REPO_OWNER/$REPO_NAME/archive/main.zip"
+
+# Install directory
 INSTALL_DIR="$HOME/.local/share/clipmind"
+
 if [ -d "$INSTALL_DIR" ]; then
     echo -e "${YELLOW}📂 ClipMind ya está instalado. Actualizando...${NC}"
-    cd "$INSTALL_DIR"
-    git pull
+    # Remove old files but keep virtual environment
+    find "$INSTALL_DIR" -mindepth 1 -not -name "venv" -exec rm -rf {} + 2>/dev/null || true
 else
-    echo -e "${BLUE}📥 Descargando ClipMind...${NC}"
+    echo -e "${BLUE}📥 Instalando ClipMind...${NC}"
     mkdir -p "$HOME/.local/share"
-    git clone https://github.com/tuusuario/clipmind.git "$INSTALL_DIR"
 fi
 
+# Download and extract ZIP (works with or without Git)
+echo -e "${BLUE}📥 Descargando ClipMind...${NC}"
+ZIP_FILE="/tmp/clipmind.zip"
+EXTRACT_DIR="/tmp/${REPO_NAME}-main"
+
+rm -f "$ZIP_FILE" 2>/dev/null || true
+rm -rf "$EXTRACT_DIR" 2>/dev/null || true
+
+curl -sSL "$ZIP_URL" -o "$ZIP_FILE"
+unzip -o "$ZIP_FILE" -d "/tmp" > /dev/null 2>&1
+cp -r "$EXTRACT_DIR/"* "$INSTALL_DIR/"
+rm -f "$ZIP_FILE"
+rm -rf "$EXTRACT_DIR"
+
 cd "$INSTALL_DIR"
+
+# Verify essential files exist
+if [ ! -f "$INSTALL_DIR/requirements.txt" ]; then
+    echo -e "${RED}❌ Error: No se encontraron los archivos del proyecto.${NC}"
+    exit 1
+fi
 
 # Create virtual environment
 echo -e "${BLUE}🔧 Creando entorno virtual...${NC}"
