@@ -53,7 +53,7 @@ class LLMClient:
             raise RuntimeError("La solicitud tardó demasiado. Verifica tu conexión.")
         except requests.exceptions.ConnectionError:
             raise RuntimeError("No se pudo conectar con el servidor. Verifica tu conexión a internet.")
-        except requests.exceptions.HTTPError as e:
+        except requests.exceptions.HTTPError:
             if response.status_code == 401:
                 raise RuntimeError("API key inválida. Verifica tu configuración.")
             elif response.status_code == 429:

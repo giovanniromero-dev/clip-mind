@@ -4,7 +4,6 @@ Uses keyboard library on Windows, pynput on Linux.
 """
 
 import platform
-import threading
 import time
 
 SYSTEM = platform.system()

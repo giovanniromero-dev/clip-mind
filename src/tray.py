@@ -1,7 +1,5 @@
 """System tray icon for ClipMind."""
 
-import os
-import sys
 import threading
 from PIL import Image, ImageDraw
 

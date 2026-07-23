@@ -2,7 +2,6 @@
 
 import tkinter as tk
 from tkinter import ttk
-import threading
 
 
 class ClipMindPopup:
@@ -18,21 +17,21 @@ class ClipMindPopup:
     def show_actions(self, selected_text):
         """Show the action selection popup."""
         self._create_window("🧠 ClipMind", "300x200")
-        
+
         # Selected text preview
-        preview = selected_text[:80] + "..." if len(selected_text) > 80 else selected_text
+        preview = (
+            selected_text[:80] + "..." if len(selected_text) > 80 else selected_text
+        )
         tk.Label(
             self.window,
             text=f"Texto: {preview}",
             wraplength=260,
             font=("Segoe UI", 9),
-            fg="#888"
+            fg="#888",
         ).pack(pady=(10, 5))
 
         tk.Label(
-            self.window,
-            text="¿Qué quieres hacer?",
-            font=("Segoe UI", 12, "bold")
+            self.window, text="¿Qué quieres hacer?", font=("Segoe UI", 12, "bold")
         ).pack(pady=(5, 10))
 
         # Action buttons frame
@@ -54,7 +53,7 @@ class ClipMindPopup:
                 height=1,
                 font=("Segoe UI", 10),
                 cursor="hand2",
-                command=lambda a=action: self._handle_action(a)
+                command=lambda a=action: self._handle_action(a),
             )
             btn.pack(pady=3)
 
@@ -65,7 +64,7 @@ class ClipMindPopup:
             font=("Segoe UI", 8),
             fg="#888",
             bd=0,
-            command=self.close
+            command=self.close,
         ).pack(pady=(5, 5))
 
         self._center_window()
@@ -77,11 +76,9 @@ class ClipMindPopup:
         self.window.geometry("500x400")
         self.window.title("🧠 ClipMind - Resultado")
 
-        tk.Label(
-            self.window,
-            text="Resultado:",
-            font=("Segoe UI", 12, "bold")
-        ).pack(pady=(10, 5))
+        tk.Label(self.window, text="Resultado:", font=("Segoe UI", 12, "bold")).pack(
+            pady=(10, 5)
+        )
 
         # Result text area
         text_frame = tk.Frame(self.window)
@@ -95,7 +92,7 @@ class ClipMindPopup:
             fg="#ffffff" if self._is_dark_theme() else "#000000",
             relief=tk.FLAT,
             padx=10,
-            pady=10
+            pady=10,
         )
         self.result_text.insert(tk.END, result)
         self.result_text.config(state=tk.DISABLED)
@@ -116,7 +113,7 @@ class ClipMindPopup:
             width=10,
             font=("Segoe UI", 10),
             cursor="hand2",
-            command=self._copy_result
+            command=self._copy_result,
         ).pack(side=tk.LEFT, padx=5)
 
         tk.Button(
@@ -125,7 +122,7 @@ class ClipMindPopup:
             width=10,
             font=("Segoe UI", 10),
             cursor="hand2",
-            command=self._repeat_action
+            command=self._repeat_action,
         ).pack(side=tk.LEFT, padx=5)
 
         tk.Button(
@@ -134,7 +131,7 @@ class ClipMindPopup:
             width=10,
             font=("Segoe UI", 10),
             cursor="hand2",
-            command=self.close
+            command=self.close,
         ).pack(side=tk.LEFT, padx=5)
 
         self._center_window()
@@ -150,7 +147,7 @@ class ClipMindPopup:
             self.window,
             text="⏳ Procesando con IA...",
             font=("Segoe UI", 12),
-            fg="#888"
+            fg="#888",
         )
         self.loading_label.pack(expand=True)
 
@@ -163,18 +160,11 @@ class ClipMindPopup:
         self.window.title("🧠 ClipMind - Error")
 
         tk.Label(
-            self.window,
-            text="⚠️ Error",
-            font=("Segoe UI", 12, "bold"),
-            fg="#ff4444"
+            self.window, text="⚠️ Error", font=("Segoe UI", 12, "bold"), fg="#ff4444"
         ).pack(pady=(15, 5))
 
         tk.Label(
-            self.window,
-            text=message,
-            wraplength=350,
-            font=("Segoe UI", 10),
-            fg="#888"
+            self.window, text=message, wraplength=350, font=("Segoe UI", 10), fg="#888"
         ).pack(pady=5)
 
         tk.Button(
@@ -182,7 +172,7 @@ class ClipMindPopup:
             text="✕ Cerrar",
             font=("Segoe UI", 10),
             cursor="hand2",
-            command=self.close
+            command=self.close,
         ).pack(pady=10)
 
         self._center_window()
@@ -190,40 +180,46 @@ class ClipMindPopup:
     def show_config_wizard(self, config, on_save):
         """Show first-time configuration wizard."""
         self._create_window("🧠 ClipMind - Configuración inicial", "450x350")
-        
+
         tk.Label(
-            self.window,
-            text="Bienvenido a ClipMind",
-            font=("Segoe UI", 14, "bold")
+            self.window, text="Bienvenido a ClipMind", font=("Segoe UI", 14, "bold")
         ).pack(pady=(15, 5))
 
         tk.Label(
             self.window,
             text="Necesitas configurar tu proveedor de IA",
             font=("Segoe UI", 10),
-            fg="#888"
+            fg="#888",
         ).pack(pady=(0, 15))
 
         # Provider selection
-        tk.Label(self.window, text="Proveedor:", font=("Segoe UI", 10)).pack(anchor=tk.W, padx=20)
+        tk.Label(self.window, text="Proveedor:", font=("Segoe UI", 10)).pack(
+            anchor=tk.W, padx=20
+        )
         provider_var = tk.StringVar(value=config.get("provider", "deepseek"))
         provider_combo = ttk.Combobox(
             self.window,
             textvariable=provider_var,
             values=["deepseek", "openai", "ollama"],
             state="readonly",
-            width=30
+            width=30,
         )
         provider_combo.pack(pady=(0, 10), padx=20)
 
         # API Key
-        tk.Label(self.window, text="API Key (dejar vacío si usas Ollama):", font=("Segoe UI", 10)).pack(anchor=tk.W, padx=20)
+        tk.Label(
+            self.window,
+            text="API Key (dejar vacío si usas Ollama):",
+            font=("Segoe UI", 10),
+        ).pack(anchor=tk.W, padx=20)
         api_entry = tk.Entry(self.window, width=40, show="*")
         api_entry.insert(0, config.get("api_key", ""))
         api_entry.pack(pady=(0, 10), padx=20)
 
         # Model
-        tk.Label(self.window, text="Modelo:", font=("Segoe UI", 10)).pack(anchor=tk.W, padx=20)
+        tk.Label(self.window, text="Modelo:", font=("Segoe UI", 10)).pack(
+            anchor=tk.W, padx=20
+        )
         model_entry = tk.Entry(self.window, width=40)
         model_entry.insert(0, config.get("model", "deepseek-chat"))
         model_entry.pack(pady=(0, 15), padx=20)
@@ -242,14 +238,15 @@ class ClipMindPopup:
             bg="#4CAF50",
             fg="white",
             cursor="hand2",
-            command=save
+            command=save,
         ).pack(pady=10)
 
         self._center_window()
         self.window.focus_force()
 
     def _handle_action(self, action):
-        """Handle action button click."""
+        """Handle action button click and store last action."""
+        self._last_action = action
         if self.on_action:
             self.on_action(action)
 
@@ -259,6 +256,7 @@ class ClipMindPopup:
             text = self.result_text.get("1.0", tk.END).strip()
             try:
                 import pyperclip
+
                 pyperclip.copy(text)
                 self._show_tooltip("✓ Copiado al portapapeles")
             except Exception:
@@ -266,15 +264,15 @@ class ClipMindPopup:
 
     def _repeat_action(self):
         """Repeat the last action."""
-        if self.on_action and hasattr(self, '_last_action'):
+        if self.on_action and hasattr(self, "_last_action"):
             self.on_action(self._last_action)
 
     def _show_tooltip(self, message):
         """Show a temporary tooltip."""
         tooltip = tk.Toplevel(self.window)
         tooltip.overrideredirect(True)
-        tooltip.attributes('-topmost', True)
-        
+        tooltip.attributes("-topmost", True)
+
         tk.Label(
             tooltip,
             text=message,
@@ -282,14 +280,14 @@ class ClipMindPopup:
             bg="#333",
             fg="white",
             padx=15,
-            pady=5
+            pady=5,
         ).pack()
-        
+
         # Position near the window center
         x = self.window.winfo_x() + self.window.winfo_width() // 2 - 75
         y = self.window.winfo_y() + self.window.winfo_height() // 2 - 20
         tooltip.geometry(f"+{x}+{y}")
-        
+
         # Auto-close after 1.5 seconds
         tooltip.after(1500, tooltip.destroy)
 
@@ -297,19 +295,19 @@ class ClipMindPopup:
         """Create the main window."""
         if self.window:
             self.close()
-        
+
         self.window = tk.Tk()
         self.window.title(title)
         self.window.geometry(geometry)
         self.window.resizable(False, False)
-        self.window.attributes('-topmost', True)
-        
+        self.window.attributes("-topmost", True)
+
         # Theme
         if self._is_dark_theme():
             self.window.configure(bg="#1e1e1e")
         else:
             self.window.configure(bg="#f0f0f0")
-        
+
         self.window.protocol("WM_DELETE_WINDOW", self.close)
 
     def _clear_window(self):
@@ -333,6 +331,7 @@ class ClipMindPopup:
         """Check if dark theme is enabled."""
         try:
             from src.config import load_config
+
             config = load_config()
             return config.get("theme", "dark") == "dark"
         except Exception:
